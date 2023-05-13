@@ -8,7 +8,7 @@ import re
 app = FastAPI()
 story = ""
 # get api from environment variable
-openai.api_key = os.environ["OPENAI_API_KEY"]
+openai.api_key = "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"
 
 
 def split_paragraph(paragraph, chunk_size):
@@ -29,7 +29,9 @@ def split_paragraph(paragraph, chunk_size):
     return chunks
 
 def get_options(text):
-    regex = r"\{\{[0-9]+\}\}(.*)"
+    # start with '}}'
+    
+    regex = r"\}\} (.+?)\b"
     matches = re.finditer(regex, text, re.MULTILINE)
     options = []
     for matchNum, match in enumerate(matches, start=1):
@@ -37,8 +39,7 @@ def get_options(text):
             groupNum = groupNum + 1
             option = match.group(groupNum)
             option = option[:33]
-            options.append(option.lstrip())
-        
+            options.append(option)
     return options
 
 
@@ -61,14 +62,14 @@ def start_game():
             \
             AI - Will ask a question and give probable options to choose from by the user.\
             Rules for how the options should be \
-            - options should look like this {{Num}} Option, where Num is the serial number\
+            - options should start with this {{Number}} and the option text will be after this\
             - options should not be more than 3 words.\
             -There only can be a maximum of 5 choices but try to keep 3 choices mostly.\
             \
             Wait for the user to choose an option. \
             My first request is “I need an engaging choice-based story set in Barcelona."},
                     ],
-                    stop=["User:"],
+                    stop=["User:", "User -"],
             )
 
     start_text = completion.choices[0].message["content"]
@@ -82,6 +83,7 @@ def start_game():
         "Text": start_text_chunks,
             "Options": options
             }
+
 
 
 @app.get("/generate")
@@ -99,14 +101,13 @@ def generate_story(player_id: int, player_input: str):
     
     # Extract the generated text from the API response
     generated_text = completion.choices[0].message["content"]
-    print(generated_text)
     
     # Update the story based on the generated text and the player's input
     story += f"\nUser chose {player_input}\nAI -{generated_text}\n"
     # get the line after User chose Num using regex
-    generated_text[generated_text.find("User chose") + 12 : generated_text.find("{{")].strip()
+    generated_text_ai_part = generated_text[generated_text.find("User chose") + 12 : generated_text.find("{{")].strip()
     # split generated_text into 299 character chunks with full words
-    generated_text_chunks = split_paragraph(generated_text, 299)
+    generated_text_chunks = split_paragraph(generated_text_ai_part, 299)
     options = get_options(generated_text)
 
     
@@ -119,4 +120,4 @@ def generate_story(player_id: int, player_input: str):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

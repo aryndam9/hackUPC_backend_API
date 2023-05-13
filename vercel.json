@@ -1,16 +1,20 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "api.py",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/api.py"
-      }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    {
+      "src": "api.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api.py"
+    }
+  ]
+}
+
+
+  {
+  "story": "\nAI: Great, I can definitely help you out with that. Let's begin your adventure in Barcelona! \n\nYou arrive in the city and decide to explore the famous Gothic Quarter. As you wander through the winding alleyways, you come across a small vintage store. Do you:\n\n{{1}} Enter the store\n{{2}} Keep walking \n{{3}} Take a photo\n\n\n\n3\nYou stop in your tracks and take out your camera, snapping a quick photo of the charming vintage store. As you admire the picture, you realize that you missed a chance to explore the store and find some unique items. Do you:\n\n{{1}} Go back and enter the store\n{{2}} Continue exploring the Gothic Quarter \n{{3}} Look for another vintage store to explore\n"
+}
