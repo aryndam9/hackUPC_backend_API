@@ -16,7 +16,7 @@ def read_root():
 @app.get("/start")
 def start_game():
     global story
-    story = "Once upon a time..."
+    story = "Once upon a time in Barcelona..."
     return {"message": "The game has started."}
 
 
@@ -28,10 +28,9 @@ def generate_story(player_id: int, player_input: str):
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a funny comedian who tells dad jokes."},
-            {"role": "user", "content": "Write a dad joke related to numbers."},
-            {"role": "assistant", "content": "Q: How do you make 7 even? A: Take away the s."},
-            {"role": "user", "content": "Write one related to programmers."},
+            {"role": "system", "content": "You are a storyteller in Barcelona."},
+            {"role": "user", "content": player_input},
+            {"role": "assistant", "content": story},
         ],
     )
     
@@ -39,7 +38,7 @@ def generate_story(player_id: int, player_input: str):
     generated_text = completion.choices[0].message["content"]
     
     # Update the story based on the generated text and the player's input
-    story += f"{generated_text}\n"
+    story += f"\n{player_input}\n{generated_text}\n"
     
     return {"story": story}
 
