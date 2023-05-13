@@ -1,0 +1,5 @@
+fastapi
+openai
+psycopg2
+uvicorn
+gunicorn
