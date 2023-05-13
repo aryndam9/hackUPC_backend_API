@@ -102,9 +102,9 @@ def generate_story(player_id: int, player_input: str):
     print(generated_text)
     
     # Update the story based on the generated text and the player's input
-    story += f"\nUser chose {player_input}\n{generated_text}\n"
+    story += f"\nUser chose {player_input}\nAI -{generated_text}\n"
     # get the line after User chose Num using regex
-    generated_text[generated_text.find("User chose") + 12 : generated_text.find("AI -")].strip()
+    generated_text[generated_text.find("User chose") + 12 : generated_text.find("{{")].strip()
     # split generated_text into 299 character chunks with full words
     generated_text_chunks = split_paragraph(generated_text, 299)
     options = get_options(generated_text)
