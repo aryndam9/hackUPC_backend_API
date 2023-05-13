@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 import openai
 import uvicorn
+import os
 
 app = FastAPI()
 story = ""
-openai.api_key = "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"
+# get api from environment variable
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 @app.get("/")
 def read_root():
