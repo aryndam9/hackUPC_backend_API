@@ -8,7 +8,7 @@ import re
 app = FastAPI()
 story = ""
 # get api from environment variable
-openai.api_key = "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"
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 def split_paragraph(paragraph, chunk_size):
