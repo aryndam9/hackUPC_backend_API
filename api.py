@@ -37,7 +37,7 @@ def get_options(text):
             groupNum = groupNum + 1
             option = match.group(groupNum)
             option = option[:33]
-            options.append(option)
+            options.append(option.lstrip())
         
     return options
 
