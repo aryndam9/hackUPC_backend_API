@@ -1,16 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+
 import openai
 import uvicorn
 import os
 import re
+import requests
+from PIL import Image
+from fastapi import FastAPI, File, Response
+import io
+
 
 
 
 app = FastAPI()
 story = ""
 # get api from environment variable
-openai.api_key = os.environ["OPENAI_API_KEY"]
-
+openai.api_key = os.environ['OPENAI_API_KEY']
+# Replace 'YOUR_API_KEY' with your actual Pexels API key
+pexel_api_key = os.environ['PEXELS_API_KEY']
 
 
 def split_paragraph(paragraph, chunk_size):
@@ -132,6 +139,99 @@ def generate_story(player_id: int, player_input: str):
         "Text": generated_text_chunks,
         "Options": options
     }
+
+
+def get_image_url(place_name, api_key):
+    headers = {
+        'Authorization': api_key
+    }
+    params = {
+        'query': place_name,
+        'per_page': 1
+    }
+    url = 'https://api.pexels.com/v1/search'
+    
+    response = requests.get(url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data['total_results'] > 0:
+            photo = data['photos'][0]
+            image_url = photo['src']['large']
+            return image_url
+    
+    return None
+
+def resize_image(image_path, width, height):
+    # Open the image
+    image = Image.open(image_path)
+    
+    # Resize the image
+    resized_image = image.resize((width, height))
+    
+    return resized_image
+
+def convert_to_binary(image):
+    # Convert the image to grayscale
+    grayscale_image = image.convert('L')
+    
+    # Convert the grayscale image to binary (black and white)
+    binary_image = grayscale_image.point(lambda x: 0 if x < 128 else 255, '1')
+    
+    return binary_image
+
+
+# create a new endpoint with image search which would have a query
+
+
+@app.get("/image")
+async def image_search(query: str):
+    
+    place_name = query
+    image_url = get_image_url(place_name, pexel_api_key)
+    if image_url:
+        response = requests.get(image_url)
+        image_path = 'image.jpg'
+
+        # Save the retrieved image
+        with open(image_path, 'wb') as f:
+            f.write(response.content)
+
+        # Specify the desired size
+        width = 380
+        height = 270
+
+        # Resize the image
+        resized_image = resize_image(image_path, width, height)
+
+        # Convert the resized image to binary
+        binary_image = convert_to_binary(resized_image)
+
+        # Save the binary image
+        binary_image_path = './images/binary_image.jpg'
+        binary_image.save(binary_image_path)
+
+        # Return the URL of the binary image for download
+        binary_image_url = f"http://hack-upc-backend-api.vercel.app/download?file={binary_image_path}"
+        return {"image_url": binary_image_url}
+
+    return {"error": "Image not found."}
+
+@app.get("/download")
+def download_image(file: str):
+    # Check if the binary image file exists
+    if os.path.exists(file):
+        # Set the appropriate headers for downloading the file
+        headers = {
+            "Content-Disposition": f"attachment; filename={file}"
+        }
+        # Open the file in binary mode
+        with open(file, "rb") as f:
+            contents = f.read()
+        # Return the file as a response with appropriate headers
+        return Response(content=contents, headers=headers, media_type="image/jpeg")
+    else:
+        return {"error": "File not found."}
 
 
 
