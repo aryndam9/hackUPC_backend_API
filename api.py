@@ -208,7 +208,7 @@ async def image_search(query: str):
         binary_image = convert_to_binary(resized_image)
 
         # Save the binary image
-        binary_image_path = './images/binary_image.jpg'
+        binary_image_path = '/tmp/binary_image.jpg'
         binary_image.save(binary_image_path)
 
         # Return the URL of the binary image for download
