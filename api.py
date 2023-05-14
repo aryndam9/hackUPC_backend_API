@@ -12,6 +12,7 @@ story = ""
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
+
 def split_paragraph(paragraph, chunk_size):
     words = paragraph.split()
     chunks = []
@@ -30,17 +31,17 @@ def split_paragraph(paragraph, chunk_size):
     return chunks
 
 def get_options(text):
-    # start with '}}'
+    # start with '}}' end end with \n
     
-    regex = r"\}\} (.+?)\b"
-    matches = re.finditer(regex, text, re.MULTILINE)
+    lines = text.split('\n')
     options = []
-    for matchNum, match in enumerate(matches, start=1):
-        for groupNum in range(0, len(match.groups())):
-            groupNum = groupNum + 1
-            option = match.group(groupNum)
-            option = option[:33]
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith('{{') and '}}' in line:
+            option = line[line.index('}}') + 2:].strip()
             options.append(option)
+    
     return options
 
 
@@ -57,26 +58,32 @@ def start_game():
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-            {"role": "system", "content": "I want you to act as an engaging storyteller, the story would be set in Barcelona, including all the popular places Barcelona has. You will come up with entertaining stories that are engaging, imaginative, and captivating for the user. It can be suspense or thriller or any other type of story which has the potential to capture people's attention and imagination.\
+            {"role": "system", "content": "You are an engaging storyteller, the story would be set in Barcelona, it would include all the popular places in Barcelona. You will come up with entertaining stories that are engaging, and has immersive choices for the user. Genre of the story can be thriller, suspense or historical fiction.\
             Your response should be in the format of\
-            AI - Here it would give context. \
+            AI - Here you will give buildup for a cohesive story. (Dont make it too long) \
             \
-            AI - Will ask a question and give probable options to choose from by the user.\
-            Rules for how the options should be \
-            - options should start with this {{Number}} and the option text will be after this\
-            - options should not be more than 3 words.\
-            -There only can be a maximum of 5 choices but try to keep 3 choices mostly.\
+            After the buildup You Will always ask a immersive question and give immersive choices so that the user can choose and a story can be build around it.\
+            Each choices should be less than 3 words \n \
+             Example:\
+            {{1}} Choice  \n \
+            {{2}} Choice  \n \
+            {{3}} Choice  \n \
+            The number of choices ideally should be 3 but can be upto 5.\
             \
             Wait for the user to choose an option. \
-            My first request is “I need an engaging choice-based story set in Barcelona."},
+            \
+            My first request is “Start the immersive choice based story for me based in barcelona."},
                     ],
-                    stop=["User:", "User -"],
+                    stop=["User", "User"],
             )
 
     start_text = completion.choices[0].message["content"]
     story += f"\n{start_text}\n"
     # get text after AI - and '{{' from start_text
-    start_text_clean = start_text[start_text.find("AI -") + 5 : start_text.find("{{")].strip()
+    start_text_clean = start_text[: start_text.find("{{")].strip()
+    # remove if start_text_clean contains 'AI -'
+    if 'AI' in start_text_clean:
+        start_text_clean = start_text_clean.replace('AI', '')
     # split start_text_clean into 299 character chunks with full words
     start_text_chunks = split_paragraph(start_text_clean, 299)
     options = get_options(start_text)
@@ -97,6 +104,14 @@ def generate_story(player_id: int, player_input: str):
         messages=[
             {"role": "assistant", "content": story},
             {"role": "user", "content": player_input},
+            {"role": "assistant", "content": "Here you will give buildup for a cohesive story. (Dont make it too long) \
+            After the buildup You Will always ask a immersive question and give immersive choices so that the user can choose and a story can be build around it.\
+            The choices should be in the format of \n \
+            {{1}} Choice 1 (less than 3 words) \n \
+            {{2}} Choice 2 (less than 3 words) \n \
+            {{3}} Choice 3 (less than 3 words) \n \
+            The number of choices ideally should be 3 but can be upto 5.\
+            Wait for the user to choose an option."}
         ],
     )
     
@@ -104,9 +119,9 @@ def generate_story(player_id: int, player_input: str):
     generated_text = completion.choices[0].message["content"]
     
     # Update the story based on the generated text and the player's input
-    story += f"\nUser chose {player_input}\nAI -{generated_text}\n"
+    story += f"\nUser chose {player_input}\nAI- {generated_text}\n"
     # get the line after User chose Num using regex
-    generated_text_ai_part = generated_text[generated_text.find("User chose") + 12 : generated_text.find("{{")].strip()
+    generated_text_ai_part = generated_text[ : generated_text.find("{{")].strip()
     # split generated_text into 299 character chunks with full words
     generated_text_chunks = split_paragraph(generated_text_ai_part, 299)
     options = get_options(generated_text)
