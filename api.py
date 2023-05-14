@@ -62,7 +62,7 @@ def start_game():
             Your response should be in the format of\
             AI - Here you will give buildup for a cohesive story. (Dont make it too long) \
             \
-            After the buildup You Will always ask a immersive question and give immersive situations to choose from so that the user can choose and a story can be build around it.\
+            After the buildup You Will always ask a question and give immersive situations or answers as choices to choose from so that the user can choose and a story can be build around it.\
             Each choices should be less than 3 words \n \
              Example:\
             {{1}} Choice  \n \
