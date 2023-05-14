@@ -62,7 +62,7 @@ def start_game():
             Your response should be in the format of\
             AI - Here you will give buildup for a cohesive story. (Dont make it too long) \
             \
-            After the buildup You Will always ask a immersive question and give immersive choices so that the user can choose and a story can be build around it.\
+            After the buildup You Will always ask a immersive question and give immersive situations to choose from so that the user can choose and a story can be build around it.\
             Each choices should be less than 3 words \n \
              Example:\
             {{1}} Choice  \n \
@@ -106,10 +106,11 @@ def generate_story(player_id: int, player_input: str):
             {"role": "user", "content": player_input},
             {"role": "assistant", "content": "Here you will give buildup for a cohesive story. (Dont make it too long) \
             After the buildup You Will always ask a immersive question and give immersive choices so that the user can choose and a story can be build around it.\
-            The choices should be in the format of \n \
-            {{1}} Choice 1 (less than 3 words) \n \
-            {{2}} Choice 2 (less than 3 words) \n \
-            {{3}} Choice 3 (less than 3 words) \n \
+            Each choices should be less than 3 words \n \
+             Example:\
+            {{1}} Choice  \n \
+            {{2}} Choice  \n \
+            {{3}} Choice  \n \
             The number of choices ideally should be 3 but can be upto 5.\
             Wait for the user to choose an option."}
         ],
