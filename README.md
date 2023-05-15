@@ -1,5 +1,7 @@
 # VueQuest - Explore and Play While Traveling
 
+<mark>This project was developed as part of the [HackUPC 23](hackupc.com) hackathon. You can find more details about the project on our [VueQuest Devpost page](https://devpost.com/software/vuequest?ref_content=user-portfolio&ref_feature=in_progress).</mark>
+
 VueQuest is a multiplayer game designed to enhance the travel experience for passengers. It offers an exciting and interactive way to learn about the city you are traveling to, discover hidden gems, and explore popular sites. By leveraging generative AI technology, VueQuest generates unique adventures for each player based on their choices.
 
 ## Features:
