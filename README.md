@@ -4,6 +4,10 @@
 
 VueQuest is a multiplayer game designed to enhance the travel experience for passengers. It offers an exciting and interactive way to learn about the city you are traveling to, discover hidden gems, and explore popular sites. By leveraging generative AI technology, VueQuest generates unique adventures for each player based on their choices.
 
+<p align="center">
+  <img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/002/478/492/datas/original.png" alt="VueQuest - Explore and Play while Traveling">
+</p>
+
 ## Features:
 
 -   **Engaging Multiplayer Gameplay:** Join a group of 5 players and embark on a thrilling quest tailored to the city you are traveling to.
